@@ -1,0 +1,99 @@
+{
+  "name": "@principal-ade/bruno-panels",
+  "version": "0.1.1",
+  "description": "Bruno API client panel for Principal ADE",
+  "type": "module",
+  "main": "dist/panels.bundle.js",
+  "module": "dist/panels.bundle.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/panels.bundle.js",
+      "require": "./dist/panels.bundle.js",
+      "default": "./dist/panels.bundle.js"
+    },
+    "./tools": {
+      "types": "./dist/tools/index.d.ts",
+      "import": "./dist/tools.bundle.js",
+      "require": "./dist/tools.bundle.js",
+      "default": "./dist/tools.bundle.js"
+    }
+  },
+  "keywords": [
+    "panel-extension"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "scripts": {
+    "build": "bun run clean && bun run build:panel && bun run build:tools && bun run build:types",
+    "build:panel": "vite build",
+    "build:tools": "bun build ./src/tools/index.ts --outfile ./dist/tools.bundle.js --format esm --target browser",
+    "build:types": "tsc --project tsconfig.build.json --emitDeclarationOnly --declaration --declarationMap",
+    "dev": "vite build --watch",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "peerDependencies": {
+    "react": ">=19.0.0",
+    "react-dom": ">=19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@principal-ade/panel-framework-core": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@principal-ade/industry-theme": "^0.1.8",
+    "@principal-ade/panel-framework-core": "^0.5.1",
+    "@principal-ade/utcp-panel-event": "^0.1.0",
+    "@usebruno/lang": "^0.12.0",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.577.0"
+  },
+  "devDependencies": {
+    "@chromatic-com/storybook": "^5.0.1",
+    "@eslint/js": "^10.0.1",
+    "@storybook/addon-docs": "^10.2.17",
+    "@storybook/addon-links": "^10.2.17",
+    "@storybook/addon-onboarding": "^10.2.17",
+    "@storybook/react-vite": "^10.2.17",
+    "@types/bun": "latest",
+    "@types/node": "^25.4.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@typescript-eslint/eslint-plugin": "^8.57.0",
+    "@typescript-eslint/parser": "^8.57.0",
+    "@vitejs/plugin-react": "^5.1.4",
+    "esbuild": "^0.27.3",
+    "eslint": "^10.0.3",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-storybook": "^10.2.17",
+    "prettier": "^3.8.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "storybook": "^10.2.17",
+    "typescript": "^5.0.4",
+    "typescript-eslint": "^8.57.0",
+    "vite": "^7.3.1"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/principal-ade/bruno-panels.git"
+  }
+}
