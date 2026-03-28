@@ -67,6 +67,47 @@ export interface ExamplePanelContext {
 }
 
 /**
+ * Bruno request structure from parsed .bru files
+ * Based on @usebruno/lang output structure
+ */
+export interface BrunoRequest {
+  meta?: {
+    name: string;
+    type: string;
+    seq?: number;
+  };
+  http: {
+    method: string;
+    url: string;
+    body?: string;
+  };
+  headers?: Array<{ name: string; value: string; enabled: boolean }>;
+  params?: Array<{
+    name: string;
+    value: string;
+    enabled: boolean;
+    type: string;
+  }>;
+  body?: {
+    json?: string;
+    text?: string;
+    xml?: string;
+    formUrlEncoded?: Array<{ name: string; value: string; enabled: boolean }>;
+    multipartForm?: Array<{
+      name: string;
+      value: string;
+      enabled: boolean;
+      type: string;
+    }>;
+  };
+  auth?: {
+    mode?: string;
+    basic?: { username: string; password: string };
+    bearer?: { token: string };
+  };
+}
+
+/**
  * Bruno Response from executing a request
  */
 export interface BrunoResponse {
@@ -93,5 +134,5 @@ export interface BrunoPanelActions {
   writeFile: (path: string, content: string) => Promise<void>;
   deleteFile: (path: string) => Promise<void>;
   exists: (path: string) => Promise<boolean>;
-  sendRequest: (request: unknown, environment?: Record<string, string>) => Promise<BrunoResponse>;
+  sendRequest: (request: BrunoRequest, environment?: Record<string, string>) => Promise<BrunoResponse>;
 }

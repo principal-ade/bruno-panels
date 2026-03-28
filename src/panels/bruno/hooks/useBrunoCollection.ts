@@ -1,13 +1,13 @@
 import { useState, useCallback } from 'react';
 import { bruToJsonV2, bruToEnvJsonV2 } from '@usebruno/lang';
-import type { BrunoResponse, BrunoPanelActions } from '../types';
+import type { BrunoRequest, BrunoResponse, BrunoPanelActions } from '../types';
 
 export interface CollectionItem {
   uid: string;
   name: string;
   type: 'folder' | 'request';
   path: string;
-  request?: unknown;
+  request?: BrunoRequest;
   items?: CollectionItem[];
 }
 
@@ -33,7 +33,7 @@ export interface UseBrunoCollectionResult {
   loadCollection: () => Promise<void>;
   selectItem: (item: CollectionItem) => void;
   sendRequest: (item: CollectionItem) => Promise<void>;
-  parseRequest: (content: string) => unknown;
+  parseRequest: (content: string) => BrunoRequest | null;
 }
 
 /**
@@ -52,9 +52,9 @@ export function useBrunoCollection(options: UseBrunoCollectionOptions): UseBruno
   /**
    * Parse a .bru file content into a request object
    */
-  const parseRequest = useCallback((content: string): unknown => {
+  const parseRequest = useCallback((content: string): BrunoRequest | null => {
     try {
-      return bruToJsonV2(content);
+      return bruToJsonV2(content) as BrunoRequest;
     } catch (err) {
       console.error('Failed to parse .bru file:', err);
       return null;
@@ -92,10 +92,10 @@ export function useBrunoCollection(options: UseBrunoCollectionOptions): UseBruno
       const name = fileName.replace('.bru', '');
 
       // Read and parse the file
-      let request: unknown = null;
+      let request: BrunoRequest | undefined;
       try {
         const content = await actions.readFile(filePath);
-        request = parseRequest(content);
+        request = parseRequest(content) ?? undefined;
       } catch (err) {
         console.warn(`Failed to read ${filePath}:`, err);
       }
