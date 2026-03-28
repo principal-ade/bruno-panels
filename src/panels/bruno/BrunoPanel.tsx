@@ -3,26 +3,9 @@ import { FolderOpen, AlertCircle } from 'lucide-react';
 import { useTheme } from '@principal-ade/industry-theme';
 import { CollectionTree, RequestEditor, ResponseViewer } from './components';
 import type { CollectionItem } from './hooks/useBrunoCollection';
-import type { PanelComponentProps, PanelActions, BrunoPanelContext, BrunoResponse } from '../../types';
+import type { PanelComponentProps, BrunoPanelActions, BrunoPanelContext, BrunoResponse } from '../../types';
 
-type BrunoPanelProps = PanelComponentProps<PanelActions, BrunoPanelContext>;
-
-// Mock sendRequest for development
-const mockSendRequest = async (request: unknown): Promise<BrunoResponse> => {
-  console.log('Mock sendRequest:', request);
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  return {
-    status: 200,
-    statusText: 'OK',
-    headers: {
-      'content-type': 'application/json',
-      'x-request-id': 'mock-123',
-    },
-    data: { message: 'Mock response', timestamp: Date.now() },
-    responseTime: 123,
-    size: 256,
-  };
-};
+type BrunoPanelProps = PanelComponentProps<BrunoPanelActions, BrunoPanelContext>;
 
 // Demo collection for development
 const demoCollection: CollectionItem[] = [
@@ -154,15 +137,14 @@ export const BrunoPanel: React.FC<BrunoPanelProps> = ({
     setError(null);
 
     try {
-      // Use mock for now - in production, this would use an action
-      const result = await mockSendRequest(selectedItem.request);
+      const result = await actions.sendRequest(selectedItem.request);
       setResponse(result);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Request failed');
     } finally {
       setIsSending(false);
     }
-  }, [selectedItem]);
+  }, [selectedItem, actions]);
 
   return (
     <div

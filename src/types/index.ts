@@ -46,7 +46,7 @@ export type {
   CommonPanelContext,
 } from '@principal-ade/panel-framework-core';
 
-import type { DataSlice, FileTree } from '@principal-ade/panel-framework-core';
+import type { DataSlice, FileTree, PanelActions } from '@principal-ade/panel-framework-core';
 
 /**
  * Git status data structure for this panel
@@ -128,8 +128,9 @@ export interface BrunoPanelContext {
 
 /**
  * Actions available to the Bruno Panel
+ * Extends PanelActions with Bruno-specific actions
  */
-export interface BrunoPanelActions {
+export interface BrunoPanelActions extends PanelActions {
   readFile: (path: string) => Promise<string>;
   writeFile: (path: string, content: string) => Promise<void>;
   deleteFile: (path: string) => Promise<void>;

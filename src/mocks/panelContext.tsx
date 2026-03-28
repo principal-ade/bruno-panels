@@ -3,12 +3,14 @@ import { ThemeProvider } from '@principal-ade/industry-theme';
 import type {
   PanelComponentProps,
   PanelContextValue,
-  PanelActions,
   PanelEventEmitter,
   PanelEvent,
   PanelEventType,
   DataSlice,
   ExamplePanelContext,
+  BrunoPanelActions,
+  BrunoRequest,
+  BrunoResponse,
 } from '../types';
 
 /**
@@ -77,8 +79,8 @@ export const createMockContext = (
  * Mock Panel Actions for Storybook
  */
 export const createMockActions = (
-  overrides?: Partial<PanelActions>
-): PanelActions => ({
+  overrides?: Partial<BrunoPanelActions>
+): BrunoPanelActions => ({
   openFile: (filePath: string) => {
     // eslint-disable-next-line no-console
     console.log('[Mock] Opening file:', filePath);
@@ -94,6 +96,40 @@ export const createMockActions = (
   notifyPanels: (event) => {
     // eslint-disable-next-line no-console
     console.log('[Mock] Notifying panels:', event);
+  },
+  readFile: async (path: string) => {
+    // eslint-disable-next-line no-console
+    console.log('[Mock] Reading file:', path);
+    return '// Mock file content';
+  },
+  writeFile: async (path: string, content: string) => {
+    // eslint-disable-next-line no-console
+    console.log('[Mock] Writing file:', path, content.length, 'chars');
+  },
+  deleteFile: async (path: string) => {
+    // eslint-disable-next-line no-console
+    console.log('[Mock] Deleting file:', path);
+  },
+  exists: async (path: string) => {
+    // eslint-disable-next-line no-console
+    console.log('[Mock] Checking exists:', path);
+    return true;
+  },
+  sendRequest: async (request: BrunoRequest, environment?: Record<string, string>): Promise<BrunoResponse> => {
+    // eslint-disable-next-line no-console
+    console.log('[Mock] Sending request:', request.http?.method, request.http?.url, environment);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    return {
+      status: 200,
+      statusText: 'OK',
+      headers: {
+        'content-type': 'application/json',
+        'x-request-id': 'mock-123',
+      },
+      data: { message: 'Mock response from Storybook', timestamp: Date.now() },
+      responseTime: 123,
+      size: 256,
+    };
   },
   ...overrides,
 });
@@ -148,9 +184,9 @@ export const createMockEvents = (): PanelEventEmitter => {
  * Wraps components with mock context and ThemeProvider for Storybook
  */
 export const MockPanelProvider: React.FC<{
-  children: (props: PanelComponentProps<PanelActions, ExamplePanelContext>) => React.ReactNode;
+  children: (props: PanelComponentProps<BrunoPanelActions, ExamplePanelContext>) => React.ReactNode;
   contextOverrides?: Partial<PanelContextValue<ExamplePanelContext>>;
-  actionsOverrides?: Partial<PanelActions>;
+  actionsOverrides?: Partial<BrunoPanelActions>;
 }> = ({ children, contextOverrides, actionsOverrides }) => {
   const context = createMockContext(contextOverrides);
   const actions = createMockActions(actionsOverrides);

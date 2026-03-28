@@ -1,5 +1,6 @@
+import React from 'react';
 import { BrunoPanel } from './panels/bruno/BrunoPanel';
-import type { PanelDefinition, PanelContextValue, BrunoPanelContext } from './types';
+import type { PanelDefinition, PanelContextValue, BrunoPanelContext, PanelComponentProps, PanelActions } from './types';
 import { brunoPanelTools, brunoPanelToolsMetadata } from './tools';
 
 // Re-export types for consumers
@@ -20,7 +21,8 @@ export const panels: PanelDefinition[] = [
       slices: ['fileTree'],
       tools: brunoPanelTools,
     },
-    component: BrunoPanel,
+    // Cast needed because BrunoPanelActions extends PanelActions with required methods
+    component: BrunoPanel as React.ComponentType<PanelComponentProps<PanelActions, BrunoPanelContext>>,
 
     onMount: async (context: PanelContextValue<BrunoPanelContext>) => {
       console.log('Bruno Panel mounted', context.currentScope.repository?.path);
