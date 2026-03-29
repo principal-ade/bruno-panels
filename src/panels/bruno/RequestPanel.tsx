@@ -4,25 +4,44 @@ import { useTheme } from '@principal-ade/industry-theme';
 import { RequestEditor, ResponseViewer } from './components';
 import type { PanelComponentProps, BrunoPanelActions, BrunoPanelContext, BrunoRequest, BrunoResponse } from '../../types';
 
-type RequestPanelProps = PanelComponentProps<BrunoPanelActions, BrunoPanelContext>;
+type RequestPanelProps = PanelComponentProps<BrunoPanelActions, BrunoPanelContext> & {
+  /** Optional request to display (if provided, skips event subscription) */
+  selectedRequest?: BrunoRequest;
+  /** Optional request ID for tracking */
+  selectedRequestId?: string;
+};
 
 /**
  * RequestPanel displays the request editor and response viewer.
- * Listens for 'principal-ade.bruno:request-selected' events from CollectionPanel.
+ * Can receive request via props or listen for 'principal-ade.bruno:request-selected' events.
  */
 export const RequestPanel: React.FC<RequestPanelProps> = ({
   actions,
   events,
+  selectedRequest,
+  selectedRequestId,
 }) => {
   const { theme } = useTheme();
-  const [request, setRequest] = useState<BrunoRequest | null>(null);
-  const [requestId, setRequestId] = useState<string | null>(null);
+  const [request, setRequest] = useState<BrunoRequest | null>(selectedRequest ?? null);
+  const [requestId, setRequestId] = useState<string | null>(selectedRequestId ?? null);
   const [response, setResponse] = useState<BrunoResponse | null>(null);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Subscribe to request-selected events
+  // Update state when props change
   useEffect(() => {
+    if (selectedRequest) {
+      setRequest(selectedRequest);
+      setRequestId(selectedRequestId ?? null);
+      setResponse(null);
+      setError(null);
+    }
+  }, [selectedRequest, selectedRequestId]);
+
+  // Subscribe to request-selected events (only if no request prop provided)
+  useEffect(() => {
+    if (selectedRequest) return; // Skip event subscription if request provided via props
+
     const unsubscribe = events.on(
       'principal-ade.bruno:request-selected',
       (event) => {
@@ -35,7 +54,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
     );
 
     return unsubscribe;
-  }, [events]);
+  }, [events, selectedRequest]);
 
   const handleSendRequest = useCallback(async () => {
     if (!request) return;
