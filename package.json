@@ -1,6 +1,6 @@
 {
   "name": "@principal-ade/bruno-panels",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Bruno API client panel for Principal ADE",
   "type": "module",
   "main": "dist/panels.bundle.js",
