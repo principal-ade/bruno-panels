@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronRight, ChevronDown, Folder } from 'lucide-react';
 import { useTheme, type Theme } from '@principal-ade/industry-theme';
-import type { CollectionItem } from '../hooks/useBrunoCollection';
+import type { CollectionItem } from '../../../types';
 
 export interface CollectionTreeProps {
   items: CollectionItem[];

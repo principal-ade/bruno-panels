@@ -55,7 +55,6 @@
     "@principal-ade/industry-theme": "^0.1.8",
     "@principal-ade/panel-framework-core": "^0.5.1",
     "@principal-ade/utcp-panel-event": "^0.1.0",
-    "@usebruno/lang": "^0.12.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.577.0"
   },

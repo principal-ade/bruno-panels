@@ -124,3 +124,15 @@ export interface BrunoPanelActions extends PanelActions {
   loadBruRequest: (path: string) => Promise<BrunoRequest>;
   sendRequest: (request: BrunoRequest, environment?: Record<string, string>) => Promise<BrunoResponse>;
 }
+
+/**
+ * Item in the collection tree (folder or request)
+ */
+export interface CollectionItem {
+  uid: string;
+  name: string;
+  type: 'folder' | 'request';
+  path: string;
+  request?: BrunoRequest;
+  items?: CollectionItem[];
+}

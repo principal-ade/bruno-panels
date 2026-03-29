@@ -2,8 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { FolderOpen, Loader } from 'lucide-react';
 import { useTheme } from '@principal-ade/industry-theme';
 import { CollectionTree } from './components';
-import type { CollectionItem } from './hooks/useBrunoCollection';
-import type { PanelComponentProps, BrunoPanelActions, BrunoPanelContext, BrunoRequest } from '../../types';
+import type { PanelComponentProps, BrunoPanelActions, BrunoPanelContext, BrunoRequest, CollectionItem } from '../../types';
 
 type CollectionPanelProps = PanelComponentProps<BrunoPanelActions, BrunoPanelContext>;
 
