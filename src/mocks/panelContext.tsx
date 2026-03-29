@@ -7,21 +7,13 @@ import type {
   PanelEvent,
   PanelEventType,
   DataSlice,
-  ExamplePanelContext,
   BrunoPanelActions,
+  BrunoPanelContext,
   BrunoRequest,
   BrunoResponse,
+  FileTree,
 } from '../types';
-
-/**
- * Mock Git Status data for Storybook
- */
-const mockGitStatusData = {
-  staged: ['src/components/Button.tsx', 'src/styles/theme.css'],
-  unstaged: ['README.md', 'package.json'],
-  untracked: ['src/new-feature.tsx'],
-  deleted: [],
-};
+import { mockBrunoRequests, mockBrunoFileTree } from './brunoData';
 
 /**
  * Create a mock DataSlice
@@ -43,43 +35,11 @@ const createMockSlice = <T,>(
 });
 
 /**
- * Mock Panel Context for Storybook
- * Updated for panel-framework-core v0.5.x API where slices are typed on context
- */
-export const createMockContext = (
-  overrides?: Partial<PanelContextValue<ExamplePanelContext>>
-): PanelContextValue<ExamplePanelContext> => {
-  const defaultContext: PanelContextValue<ExamplePanelContext> = {
-    currentScope: {
-      type: 'repository',
-      workspace: {
-        name: 'my-workspace',
-        path: '/Users/developer/my-workspace',
-      },
-      repository: {
-        name: 'my-project',
-        path: '/Users/developer/my-project',
-      },
-    },
-    // v0.5.x API: slices are typed directly on the context
-    git: createMockSlice('git', mockGitStatusData),
-    refresh: async (
-      scope?: 'workspace' | 'repository',
-      slice?: string
-    ): Promise<void> => {
-      // eslint-disable-next-line no-console
-      console.log('[Mock] Context refresh called', { scope, slice });
-    },
-  };
-
-  return { ...defaultContext, ...overrides };
-};
-
-/**
  * Mock Panel Actions for Storybook
  */
 export const createMockActions = (
-  overrides?: Partial<BrunoPanelActions>
+  overrides?: Partial<BrunoPanelActions>,
+  brunoRequests: Record<string, BrunoRequest> = mockBrunoRequests
 ): BrunoPanelActions => ({
   openFile: (filePath: string) => {
     // eslint-disable-next-line no-console
@@ -101,6 +61,15 @@ export const createMockActions = (
     // eslint-disable-next-line no-console
     console.log('[Mock] Reading file:', path);
     return '// Mock file content';
+  },
+  loadBruRequest: async (path: string) => {
+    // eslint-disable-next-line no-console
+    console.log('[Mock] Loading Bruno request:', path);
+    const request = brunoRequests[path];
+    if (request) {
+      return request;
+    }
+    throw new Error(`Mock request not found: ${path}`);
   },
   writeFile: async (path: string, content: string) => {
     // eslint-disable-next-line no-console
@@ -180,16 +149,51 @@ export const createMockEvents = (): PanelEventEmitter => {
 };
 
 /**
- * Mock Panel Props Provider
- * Wraps components with mock context and ThemeProvider for Storybook
+ * Mock Bruno Panel Context for Storybook
+ * Includes fileTree slice for Bruno collection discovery
  */
-export const MockPanelProvider: React.FC<{
-  children: (props: PanelComponentProps<BrunoPanelActions, ExamplePanelContext>) => React.ReactNode;
-  contextOverrides?: Partial<PanelContextValue<ExamplePanelContext>>;
+export const createMockBrunoContext = (
+  fileTree: FileTree = mockBrunoFileTree,
+  overrides?: Partial<PanelContextValue<BrunoPanelContext>>
+): PanelContextValue<BrunoPanelContext> => {
+  const defaultContext: PanelContextValue<BrunoPanelContext> = {
+    currentScope: {
+      type: 'repository',
+      workspace: {
+        name: 'my-workspace',
+        path: '/Users/developer/my-workspace',
+      },
+      repository: {
+        name: 'collection',
+        path: '/collection',
+      },
+    },
+    fileTree: createMockSlice('fileTree', fileTree),
+    refresh: async (
+      scope?: 'workspace' | 'repository',
+      slice?: string
+    ): Promise<void> => {
+      // eslint-disable-next-line no-console
+      console.log('[Mock] Bruno context refresh called', { scope, slice });
+    },
+  };
+
+  return { ...defaultContext, ...overrides };
+};
+
+/**
+ * Mock Bruno Panel Props Provider
+ * Wraps BrunoPanel with mock context including fileTree and ThemeProvider
+ */
+export const MockBrunoPanelProvider: React.FC<{
+  children: (props: PanelComponentProps<BrunoPanelActions, BrunoPanelContext>) => React.ReactNode;
+  fileTree?: FileTree;
+  brunoRequests?: Record<string, BrunoRequest>;
+  contextOverrides?: Partial<PanelContextValue<BrunoPanelContext>>;
   actionsOverrides?: Partial<BrunoPanelActions>;
-}> = ({ children, contextOverrides, actionsOverrides }) => {
-  const context = createMockContext(contextOverrides);
-  const actions = createMockActions(actionsOverrides);
+}> = ({ children, fileTree, brunoRequests, contextOverrides, actionsOverrides }) => {
+  const context = createMockBrunoContext(fileTree, contextOverrides);
+  const actions = createMockActions(actionsOverrides, brunoRequests);
   const events = createMockEvents();
 
   return <ThemeProvider>{children({ context, actions, events })}</ThemeProvider>;

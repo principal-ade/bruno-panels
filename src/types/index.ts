@@ -44,27 +44,12 @@ export type {
   FileTreeContext,
   ActiveFileContext,
   CommonPanelContext,
+
+  // FileTree type
+  FileTree,
 } from '@principal-ade/panel-framework-core';
 
 import type { DataSlice, FileTree, PanelActions } from '@principal-ade/panel-framework-core';
-
-/**
- * Git status data structure for this panel
- */
-export interface GitStatusData {
-  staged: string[];
-  unstaged: string[];
-  untracked: string[];
-  deleted: string[];
-}
-
-/**
- * Context type for the Example Panel
- * Defines the data slices this panel expects
- */
-export interface ExamplePanelContext {
-  git?: DataSlice<GitStatusData>;
-}
 
 /**
  * Bruno request structure from parsed .bru files
@@ -135,5 +120,7 @@ export interface BrunoPanelActions extends PanelActions {
   writeFile: (path: string, content: string) => Promise<void>;
   deleteFile: (path: string) => Promise<void>;
   exists: (path: string) => Promise<boolean>;
+  /** Load and parse a .bru file, returning a BrunoRequest. Parsing happens on the host side. */
+  loadBruRequest: (path: string) => Promise<BrunoRequest>;
   sendRequest: (request: BrunoRequest, environment?: Record<string, string>) => Promise<BrunoResponse>;
 }
