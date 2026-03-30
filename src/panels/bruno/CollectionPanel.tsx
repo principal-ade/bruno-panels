@@ -193,7 +193,6 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
             }
           }
 
-          console.log('[CollectionPanel] Emitting environment-changed:', firstEnv.name, envVars);
           events.emit({
             type: 'principal-ade.bruno:environment-changed',
             source: 'collection-panel',
