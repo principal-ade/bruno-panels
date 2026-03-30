@@ -235,15 +235,31 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
   const handleSelectItem = useCallback((item: CollectionItem) => {
     if (item.type === 'request') {
       setSelectedItem(item);
-      // Emit event for RequestPanel
+
+      // Build environment vars
+      const envVars: Record<string, string> = {};
+      if (selectedEnvironment) {
+        for (const v of selectedEnvironment.variables) {
+          if (v.enabled) {
+            envVars[v.name] = v.value;
+          }
+        }
+      }
+
+      // Emit event for RequestPanel with environment included
       events.emit({
         type: 'principal-ade.bruno:request-selected',
         source: 'collection-panel',
         timestamp: Date.now(),
-        payload: { requestId: item.uid, request: item.request },
+        payload: {
+          requestId: item.uid,
+          request: item.request,
+          environment: envVars,
+          environmentName: selectedEnvironment?.name || null,
+        },
       });
     }
-  }, [events]);
+  }, [events, selectedEnvironment]);
 
   return (
     <div

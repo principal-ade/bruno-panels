@@ -47,11 +47,21 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
     const unsubscribe = events.on(
       'principal-ade.bruno:request-selected',
       (event) => {
-        const payload = event.payload as { requestId: string; request: BrunoRequest };
+        const payload = event.payload as {
+          requestId: string;
+          request: BrunoRequest;
+          environment?: Record<string, string>;
+          environmentName?: string | null;
+        };
         setRequestId(payload.requestId);
         setRequest(payload.request);
         setResponse(null);
         setError(null);
+        // Set environment from the event payload
+        if (payload.environment) {
+          setEnvironment(payload.environment);
+          setEnvironmentName(payload.environmentName || null);
+        }
       }
     );
 
