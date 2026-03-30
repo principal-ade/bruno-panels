@@ -9,6 +9,10 @@ type RequestPanelProps = PanelComponentProps<BrunoPanelActions, BrunoPanelContex
   selectedRequest?: BrunoRequest;
   /** Optional request ID for tracking */
   selectedRequestId?: string;
+  /** Optional environment variables for request interpolation */
+  selectedEnvironment?: Record<string, string>;
+  /** Optional environment name */
+  selectedEnvironmentName?: string;
 };
 
 /**
@@ -20,6 +24,8 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
   events,
   selectedRequest,
   selectedRequestId,
+  selectedEnvironment,
+  selectedEnvironmentName,
 }) => {
   const { theme } = useTheme();
   const [request, setRequest] = useState<BrunoRequest | null>(selectedRequest ?? null);
@@ -27,8 +33,8 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
   const [response, setResponse] = useState<BrunoResponse | null>(null);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [environment, setEnvironment] = useState<Record<string, string>>({});
-  const [environmentName, setEnvironmentName] = useState<string | null>(null);
+  const [environment, setEnvironment] = useState<Record<string, string>>(selectedEnvironment ?? {});
+  const [environmentName, setEnvironmentName] = useState<string | null>(selectedEnvironmentName ?? null);
 
   // Update state when props change
   useEffect(() => {
@@ -39,6 +45,14 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
       setError(null);
     }
   }, [selectedRequest, selectedRequestId]);
+
+  // Update environment when props change
+  useEffect(() => {
+    if (selectedEnvironment) {
+      setEnvironment(selectedEnvironment);
+      setEnvironmentName(selectedEnvironmentName ?? null);
+    }
+  }, [selectedEnvironment, selectedEnvironmentName]);
 
   // Subscribe to request-selected events (only if no request prop provided)
   useEffect(() => {
