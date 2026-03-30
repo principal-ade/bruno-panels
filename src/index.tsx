@@ -4,7 +4,7 @@ import type { PanelDefinition, PanelContextValue, BrunoPanelContext, PanelCompon
 import { brunoPanelTools, brunoPanelToolsMetadata } from './tools';
 
 // Re-export types for consumers
-export type { BrunoRequest, BrunoResponse, BrunoPanelActions } from './types';
+export type { BrunoRequest, BrunoResponse, BrunoEnvironment, BrunoPanelActions } from './types';
 
 /**
  * Export array of panel definitions.
