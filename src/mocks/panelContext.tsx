@@ -11,9 +11,10 @@ import type {
   BrunoPanelContext,
   BrunoRequest,
   BrunoResponse,
+  BrunoEnvironment,
   FileTree,
 } from '../types';
-import { mockBrunoRequests, mockBrunoFileTree } from './brunoData';
+import { mockBrunoRequests, mockBrunoFileTree, mockBrunoEnvironments } from './brunoData';
 
 /**
  * Create a mock DataSlice
@@ -70,6 +71,11 @@ export const createMockActions = (
       return request;
     }
     throw new Error(`Mock request not found: ${path}`);
+  },
+  loadEnvironments: async (collectionPath: string): Promise<BrunoEnvironment[]> => {
+    // eslint-disable-next-line no-console
+    console.log('[Mock] Loading environments for:', collectionPath);
+    return mockBrunoEnvironments;
   },
   writeFile: async (path: string, content: string) => {
     // eslint-disable-next-line no-console

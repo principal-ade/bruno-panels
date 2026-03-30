@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { FolderOpen, Loader, HelpCircle } from 'lucide-react';
 import { useTheme } from '@principal-ade/industry-theme';
-import { CollectionHelp, CollectionTree } from './components';
-import type { PanelComponentProps, BrunoPanelActions, BrunoPanelContext, BrunoRequest, CollectionItem } from '../../types';
+import { CollectionHelp, CollectionTree, EnvironmentSelector } from './components';
+import type { PanelComponentProps, BrunoPanelActions, BrunoPanelContext, BrunoRequest, BrunoEnvironment, CollectionItem } from '../../types';
 
 type CollectionPanelProps = PanelComponentProps<BrunoPanelActions, BrunoPanelContext>;
 
@@ -99,6 +99,8 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showHelp, setShowHelp] = useState(false);
+  const [environments, setEnvironments] = useState<BrunoEnvironment[]>([]);
+  const [selectedEnvironment, setSelectedEnvironment] = useState<BrunoEnvironment | null>(null);
 
   // Load collection from fileTree context
   useEffect(() => {
@@ -139,6 +141,67 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
 
     loadCollection();
   }, [context.fileTree?.data, actions]);
+
+  // Load environments from environments folder
+  useEffect(() => {
+    const loadEnvironments = async () => {
+      const fileTree = context.fileTree?.data;
+      if (!fileTree) return;
+
+      try {
+        const collectionPath = fileTree.root.path;
+        const envs = await actions.loadEnvironments(collectionPath);
+        setEnvironments(envs);
+
+        // Auto-select first environment and emit event
+        if (envs.length > 0) {
+          const firstEnv = envs[0];
+          setSelectedEnvironment(firstEnv);
+
+          const envVars: Record<string, string> = {};
+          for (const v of firstEnv.variables) {
+            if (v.enabled) {
+              envVars[v.name] = v.value;
+            }
+          }
+
+          events.emit({
+            type: 'principal-ade.bruno:environment-changed',
+            source: 'collection-panel',
+            timestamp: Date.now(),
+            payload: { environment: envVars, environmentName: firstEnv.name },
+          });
+        }
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.warn('Failed to load environments:', err);
+      }
+    };
+
+    loadEnvironments();
+  }, [context.fileTree?.data, actions, events]);
+
+  // Emit environment change event
+  const handleEnvironmentChange = useCallback((env: BrunoEnvironment | null) => {
+    setSelectedEnvironment(env);
+
+    // Convert environment variables to Record<string, string>
+    const envVars: Record<string, string> = {};
+    if (env) {
+      for (const v of env.variables) {
+        if (v.enabled) {
+          envVars[v.name] = v.value;
+        }
+      }
+    }
+
+    events.emit({
+      type: 'principal-ade.bruno:environment-changed',
+      source: 'collection-panel',
+      timestamp: Date.now(),
+      payload: { environment: envVars, environmentName: env?.name || null },
+    });
+  }, [events]);
 
   const handleSelectItem = useCallback((item: CollectionItem) => {
     if (item.type === 'request') {
@@ -199,6 +262,15 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
           </button>
         )}
       </div>
+
+      {/* Environment Selector */}
+      {environments.length > 0 && (
+        <EnvironmentSelector
+          environments={environments}
+          selectedEnvironment={selectedEnvironment}
+          onSelectEnvironment={handleEnvironmentChange}
+        />
+      )}
 
       {/* Tree */}
       <div style={{ flex: 1, overflow: 'auto' }}>

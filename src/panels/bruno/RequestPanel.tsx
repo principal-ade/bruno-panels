@@ -27,6 +27,8 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
   const [response, setResponse] = useState<BrunoResponse | null>(null);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [environment, setEnvironment] = useState<Record<string, string>>({});
+  const [environmentName, setEnvironmentName] = useState<string | null>(null);
 
   // Update state when props change
   useEffect(() => {
@@ -56,6 +58,20 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
     return unsubscribe;
   }, [events, selectedRequest]);
 
+  // Subscribe to environment-changed events
+  useEffect(() => {
+    const unsubscribe = events.on(
+      'principal-ade.bruno:environment-changed',
+      (event) => {
+        const payload = event.payload as { environment: Record<string, string>; environmentName: string | null };
+        setEnvironment(payload.environment);
+        setEnvironmentName(payload.environmentName);
+      }
+    );
+
+    return unsubscribe;
+  }, [events]);
+
   const handleSendRequest = useCallback(async () => {
     if (!request) return;
 
@@ -63,14 +79,14 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
     setError(null);
 
     try {
-      const result = await actions.sendRequest(request);
+      const result = await actions.sendRequest(request, environment);
       setResponse(result);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Request failed');
     } finally {
       setIsSending(false);
     }
-  }, [request, actions]);
+  }, [request, actions, environment]);
 
   return (
     <div

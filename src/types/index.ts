@@ -105,6 +105,19 @@ export interface BrunoResponse {
 }
 
 /**
+ * Bruno Environment from environments/*.json files
+ */
+export interface BrunoEnvironment {
+  name: string;
+  variables: Array<{
+    name: string;
+    value: string;
+    enabled: boolean;
+    secret?: boolean;
+  }>;
+}
+
+/**
  * Context type for the Bruno Panel
  */
 export interface BrunoPanelContext {
@@ -122,6 +135,8 @@ export interface BrunoPanelActions extends PanelActions {
   exists: (path: string) => Promise<boolean>;
   /** Load and parse a .bru file, returning a BrunoRequest. Parsing happens on the host side. */
   loadBruRequest: (path: string) => Promise<BrunoRequest>;
+  /** Load all environments from environments/*.json files in the collection */
+  loadEnvironments: (collectionPath: string) => Promise<BrunoEnvironment[]>;
   sendRequest: (request: BrunoRequest, environment?: Record<string, string>) => Promise<BrunoResponse>;
 }
 

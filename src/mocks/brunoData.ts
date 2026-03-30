@@ -4,12 +4,45 @@
  */
 
 import type { FileTree } from '@principal-ade/panel-framework-core';
-import type { BrunoRequest } from '../types';
+import type { BrunoRequest, BrunoEnvironment } from '../types';
 
 /**
  * Mock pre-parsed BrunoRequest objects keyed by path
  * In production, the host would parse .bru files using @usebruno/lang
  */
+/**
+ * Mock Bruno environments
+ */
+export const mockBrunoEnvironments: BrunoEnvironment[] = [
+  {
+    name: 'local',
+    variables: [
+      { name: 'base_url', value: 'http://localhost:3000', enabled: true, secret: false },
+      { name: 'token', value: 'dev-token-123', enabled: true, secret: true },
+      { name: 'email', value: 'dev@example.com', enabled: true, secret: false },
+      { name: 'password', value: 'devpass', enabled: true, secret: true },
+    ],
+  },
+  {
+    name: 'staging',
+    variables: [
+      { name: 'base_url', value: 'https://staging.api.example.com', enabled: true, secret: false },
+      { name: 'token', value: 'staging-token-456', enabled: true, secret: true },
+      { name: 'email', value: 'staging@example.com', enabled: true, secret: false },
+      { name: 'password', value: 'stagingpass', enabled: true, secret: true },
+    ],
+  },
+  {
+    name: 'production',
+    variables: [
+      { name: 'base_url', value: 'https://api.example.com', enabled: true, secret: false },
+      { name: 'token', value: 'prod-token-789', enabled: true, secret: true },
+      { name: 'email', value: 'prod@example.com', enabled: true, secret: false },
+      { name: 'password', value: 'prodpass', enabled: true, secret: true },
+    ],
+  },
+];
+
 export const mockBrunoRequests: Record<string, BrunoRequest> = {
   '/collection/users/get-users.bru': {
     meta: { name: 'Get All Users', type: 'http', seq: 1 },
