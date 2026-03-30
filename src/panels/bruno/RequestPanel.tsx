@@ -60,10 +60,12 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
 
   // Subscribe to environment-changed events
   useEffect(() => {
+    console.log('[RequestPanel] Subscribing to environment-changed events');
     const unsubscribe = events.on(
       'principal-ade.bruno:environment-changed',
       (event) => {
         const payload = event.payload as { environment: Record<string, string>; environmentName: string | null };
+        console.log('[RequestPanel] Environment changed:', payload.environmentName, payload.environment);
         setEnvironment(payload.environment);
         setEnvironmentName(payload.environmentName);
       }
@@ -77,6 +79,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
 
     setIsSending(true);
     setError(null);
+    console.log('[RequestPanel] Sending request with environment:', environment);
 
     try {
       const result = await actions.sendRequest(request, environment);
