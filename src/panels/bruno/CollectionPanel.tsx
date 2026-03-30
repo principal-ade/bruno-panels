@@ -6,10 +6,12 @@ import type { PanelComponentProps, BrunoPanelActions, BrunoPanelContext, BrunoRe
 
 type CollectionPanelProps = PanelComponentProps<BrunoPanelActions, BrunoPanelContext>;
 
+type FileTreeNode = { path: string; name: string; children?: unknown[]; isDirectory?: boolean };
+
 /**
  * Recursively extracts .bru file paths from a FileTree node
  */
-function extractBruFilePaths(node: { path: string; name: string; children?: unknown[]; isDirectory?: boolean }): string[] {
+function extractBruFilePaths(node: FileTreeNode): string[] {
   const paths: string[] = [];
 
   if (node.isDirectory === false && node.name.endsWith('.bru')) {
@@ -18,11 +20,36 @@ function extractBruFilePaths(node: { path: string; name: string; children?: unkn
 
   if (node.children && Array.isArray(node.children)) {
     for (const child of node.children) {
-      paths.push(...extractBruFilePaths(child as { path: string; name: string; children?: unknown[]; isDirectory?: boolean }));
+      paths.push(...extractBruFilePaths(child as FileTreeNode));
     }
   }
 
   return paths;
+}
+
+/**
+ * Find the Bruno collection path by locating bruno.json
+ */
+function findBrunoCollectionPath(node: FileTreeNode): string | null {
+  // Check if this directory contains bruno.json
+  if (node.children && Array.isArray(node.children)) {
+    for (const child of node.children) {
+      const childNode = child as FileTreeNode;
+      if (childNode.isDirectory === false && childNode.name === 'bruno.json') {
+        // Found bruno.json, return the parent directory path
+        return node.path;
+      }
+    }
+    // Recursively check subdirectories
+    for (const child of node.children) {
+      const childNode = child as FileTreeNode;
+      if (childNode.isDirectory !== false) {
+        const result = findBrunoCollectionPath(childNode);
+        if (result) return result;
+      }
+    }
+  }
+  return null;
 }
 
 /**
@@ -149,7 +176,8 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
       if (!fileTree) return;
 
       try {
-        const collectionPath = fileTree.root.path;
+        // Find the Bruno collection path (where bruno.json is located)
+        const collectionPath = findBrunoCollectionPath(fileTree.root) || fileTree.root.path;
         const envs = await actions.loadEnvironments(collectionPath);
         setEnvironments(envs);
 
