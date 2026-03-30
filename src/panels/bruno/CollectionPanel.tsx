@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { FolderOpen, Loader } from 'lucide-react';
+import { FolderOpen, Loader, HelpCircle } from 'lucide-react';
 import { useTheme } from '@principal-ade/industry-theme';
-import { CollectionTree } from './components';
+import { CollectionHelp, CollectionTree } from './components';
 import type { PanelComponentProps, BrunoPanelActions, BrunoPanelContext, BrunoRequest, CollectionItem } from '../../types';
 
 type CollectionPanelProps = PanelComponentProps<BrunoPanelActions, BrunoPanelContext>;
@@ -98,6 +98,7 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
   const [items, setItems] = useState<CollectionItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showHelp, setShowHelp] = useState(false);
 
   // Load collection from fileTree context
   useEffect(() => {
@@ -169,12 +170,34 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
-          padding: '12px',
+          height: '40px',
+          paddingLeft: '12px',
+          paddingRight: '12px',
+          boxSizing: 'border-box',
           borderBottom: `1px solid ${theme.colors.border}`,
         }}
       >
         <FolderOpen size={16} color={theme.colors.primary} />
-        <span style={{ fontSize: '13px', fontWeight: 600 }}>Collection</span>
+        <span style={{ fontSize: '13px', fontWeight: 600, flex: 1 }}>Collection</span>
+        {items.length > 0 && (
+          <button
+            onClick={() => setShowHelp(!showHelp)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '4px',
+              background: showHelp ? theme.colors.muted : 'transparent',
+              border: 'none',
+              borderRadius: '4px',
+              color: theme.colors.textMuted,
+              cursor: 'pointer',
+            }}
+            title="Help"
+          >
+            <HelpCircle size={16} />
+          </button>
+        )}
       </div>
 
       {/* Tree */}
@@ -202,17 +225,8 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
           >
             {error}
           </div>
-        ) : items.length === 0 ? (
-          <div
-            style={{
-              padding: '24px',
-              textAlign: 'center',
-              color: theme.colors.textMuted,
-              fontSize: '12px',
-            }}
-          >
-            No requests found
-          </div>
+        ) : showHelp || items.length === 0 ? (
+          <CollectionHelp />
         ) : (
           <CollectionTree
             items={items}
