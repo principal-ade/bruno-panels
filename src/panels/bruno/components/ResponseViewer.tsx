@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTheme } from '@principal-ade/industry-theme';
 import type { BrunoResponse } from '../../../types';
+import { paneHeaderStyle, paneTabsStyle } from './paneLayout';
 
 export interface ResponseViewerProps {
   response: BrunoResponse | null;
@@ -83,7 +84,9 @@ export const ResponseViewer: React.FC<ResponseViewerProps> = ({
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Status Bar */}
       <div
+        data-testid="response-header"
         style={{
+          ...paneHeaderStyle,
           display: 'flex',
           alignItems: 'center',
           gap: '16px',
@@ -109,7 +112,14 @@ export const ResponseViewer: React.FC<ResponseViewerProps> = ({
           </span>
         </div>
 
-        <div style={{ display: 'flex', gap: '16px', fontSize: '12px', color: theme.colors.textMuted }}>
+        <div
+          style={{
+            display: 'flex',
+            gap: '16px',
+            fontSize: '12px',
+            color: theme.colors.textMuted,
+          }}
+        >
           <span>Time: {response.responseTime}ms</span>
           <span>Size: {formatSize(response.size)}</span>
         </div>
@@ -117,7 +127,9 @@ export const ResponseViewer: React.FC<ResponseViewerProps> = ({
 
       {/* Tabs */}
       <div
+        data-testid="response-tabs"
         style={{
+          ...paneTabsStyle,
           display: 'flex',
           gap: '4px',
           padding: '8px 12px',
@@ -128,10 +140,14 @@ export const ResponseViewer: React.FC<ResponseViewerProps> = ({
           onClick={() => setActiveTab('body')}
           style={{
             padding: '6px 12px',
-            background: activeTab === 'body' ? theme.colors.backgroundSecondary : 'transparent',
+            background:
+              activeTab === 'body'
+                ? theme.colors.backgroundSecondary
+                : 'transparent',
             border: 'none',
             borderRadius: '4px',
-            color: activeTab === 'body' ? theme.colors.text : theme.colors.textMuted,
+            color:
+              activeTab === 'body' ? theme.colors.text : theme.colors.textMuted,
             fontSize: '12px',
             fontWeight: 500,
             cursor: 'pointer',
@@ -146,10 +162,16 @@ export const ResponseViewer: React.FC<ResponseViewerProps> = ({
             alignItems: 'center',
             gap: '6px',
             padding: '6px 12px',
-            background: activeTab === 'headers' ? theme.colors.backgroundSecondary : 'transparent',
+            background:
+              activeTab === 'headers'
+                ? theme.colors.backgroundSecondary
+                : 'transparent',
             border: 'none',
             borderRadius: '4px',
-            color: activeTab === 'headers' ? theme.colors.text : theme.colors.textMuted,
+            color:
+              activeTab === 'headers'
+                ? theme.colors.text
+                : theme.colors.textMuted,
             fontSize: '12px',
             fontWeight: 500,
             cursor: 'pointer',
@@ -191,24 +213,60 @@ export const ResponseViewer: React.FC<ResponseViewerProps> = ({
         )}
 
         {activeTab === 'headers' && (
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+          <table
+            style={{
+              width: '100%',
+              borderCollapse: 'collapse',
+              fontSize: '12px',
+            }}
+          >
             <thead>
               <tr style={{ borderBottom: `1px solid ${theme.colors.border}` }}>
-                <th style={{ textAlign: 'left', padding: '8px', color: theme.colors.textMuted, fontWeight: 500, width: '30%' }}>
+                <th
+                  style={{
+                    textAlign: 'left',
+                    padding: '8px',
+                    color: theme.colors.textMuted,
+                    fontWeight: 500,
+                    width: '30%',
+                  }}
+                >
                   Header
                 </th>
-                <th style={{ textAlign: 'left', padding: '8px', color: theme.colors.textMuted, fontWeight: 500 }}>
+                <th
+                  style={{
+                    textAlign: 'left',
+                    padding: '8px',
+                    color: theme.colors.textMuted,
+                    fontWeight: 500,
+                  }}
+                >
                   Value
                 </th>
               </tr>
             </thead>
             <tbody>
               {Object.entries(response.headers).map(([key, value]) => (
-                <tr key={key} style={{ borderBottom: `1px solid ${theme.colors.border}` }}>
-                  <td style={{ padding: '8px', fontFamily: 'monospace', color: theme.colors.text }}>
+                <tr
+                  key={key}
+                  style={{ borderBottom: `1px solid ${theme.colors.border}` }}
+                >
+                  <td
+                    style={{
+                      padding: '8px',
+                      fontFamily: 'monospace',
+                      color: theme.colors.text,
+                    }}
+                  >
                     {key}
                   </td>
-                  <td style={{ padding: '8px', fontFamily: 'monospace', color: theme.colors.text }}>
+                  <td
+                    style={{
+                      padding: '8px',
+                      fontFamily: 'monospace',
+                      color: theme.colors.text,
+                    }}
+                  >
                     {value}
                   </td>
                 </tr>

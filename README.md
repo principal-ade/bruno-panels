@@ -1,5 +1,11 @@
 # Panel Extension Starter
 
+## Editable Bruno requests
+
+The request panel supports standalone prepared requests, editing, and optional
+host-owned tab state. See [the request panel integration guide](docs/request-panel.md)
+for the public API and Storybook testing examples.
+
 A starter template for building panel extensions compatible with `@principal-ade/panel-framework-core`. This template follows the [Panel Extension Store Specification V2](https://github.com/principal-ade/panel-framework/blob/main/PANEL_EXTENSION_STORE_SPECIFICATION_V2.md) and provides everything you need to create, build, and publish custom panels.
 
 ## What is a Panel Extension?

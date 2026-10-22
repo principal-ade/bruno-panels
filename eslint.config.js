@@ -47,6 +47,6 @@ export default tseslint.config(
     },
   },
   {
-    ignores: ['dist/**', 'node_modules/**', '*.config.js'],
+    ignores: ['dist/**', 'storybook-static/**', 'node_modules/**', '*.config.js'],
   }
 );

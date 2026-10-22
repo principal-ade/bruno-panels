@@ -1,10 +1,32 @@
 import React from 'react';
 import { CollectionPanel, RequestPanel } from './panels/bruno';
-import type { PanelDefinition, PanelContextValue, BrunoPanelContext, PanelComponentProps, PanelActions } from './types';
+import type {
+  PanelDefinition,
+  PanelContextValue,
+  BrunoPanelContext,
+  PanelComponentProps,
+  PanelActions,
+} from './types';
 import { brunoPanelTools, brunoPanelToolsMetadata } from './tools';
 
 // Re-export types for consumers
-export type { BrunoRequest, BrunoResponse, BrunoEnvironment, BrunoPanelActions } from './types';
+export type {
+  BrunoRequest,
+  BrunoResponse,
+  BrunoEnvironment,
+  BrunoPanelActions,
+} from './types';
+export {
+  RequestPanel,
+  createRequestPanelState,
+} from './panels/bruno/RequestPanel';
+export type {
+  RequestPanelProps,
+  RequestPanelState,
+} from './panels/bruno/RequestPanel';
+export { RequestEditor, ResponseViewer } from './panels/bruno/components';
+export type { RequestEditorProps } from './panels/bruno/components/RequestEditor';
+export type { ResponseViewerProps } from './panels/bruno/components/ResponseViewer';
 
 /**
  * Export array of panel definitions.
@@ -21,10 +43,15 @@ export const panels: PanelDefinition[] = [
       slices: ['fileTree'],
       tools: [],
     },
-    component: CollectionPanel as React.ComponentType<PanelComponentProps<PanelActions, BrunoPanelContext>>,
+    component: CollectionPanel as React.ComponentType<
+      PanelComponentProps<PanelActions, BrunoPanelContext>
+    >,
 
     onMount: async (context: PanelContextValue<BrunoPanelContext>) => {
-      console.log('Bruno Collection Panel mounted', context.currentScope.repository?.path);
+      console.log(
+        'Bruno Collection Panel mounted',
+        context.currentScope.repository?.path
+      );
     },
 
     onUnmount: async (_context: PanelContextValue<BrunoPanelContext>) => {
@@ -42,10 +69,15 @@ export const panels: PanelDefinition[] = [
       slices: [],
       tools: brunoPanelTools,
     },
-    component: RequestPanel as React.ComponentType<PanelComponentProps<PanelActions, BrunoPanelContext>>,
+    component: RequestPanel as React.ComponentType<
+      PanelComponentProps<PanelActions, BrunoPanelContext>
+    >,
 
     onMount: async (context: PanelContextValue<BrunoPanelContext>) => {
-      console.log('Bruno Request Panel mounted', context.currentScope.repository?.path);
+      console.log(
+        'Bruno Request Panel mounted',
+        context.currentScope.repository?.path
+      );
     },
 
     onUnmount: async (_context: PanelContextValue<BrunoPanelContext>) => {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ThemeProvider } from '@principal-ade/industry-theme';
 import type {
   PanelComponentProps,
@@ -14,7 +14,11 @@ import type {
   BrunoEnvironment,
   FileTree,
 } from '../types';
-import { mockBrunoRequests, mockBrunoFileTree, mockBrunoEnvironments } from './brunoData';
+import {
+  mockBrunoRequests,
+  mockBrunoFileTree,
+  mockBrunoEnvironments,
+} from './brunoData';
 
 /**
  * Create a mock DataSlice
@@ -72,7 +76,9 @@ export const createMockActions = (
     }
     throw new Error(`Mock request not found: ${path}`);
   },
-  loadEnvironments: async (collectionPath: string): Promise<BrunoEnvironment[]> => {
+  loadEnvironments: async (
+    collectionPath: string
+  ): Promise<BrunoEnvironment[]> => {
     // eslint-disable-next-line no-console
     console.log('[Mock] Loading environments for:', collectionPath);
     return mockBrunoEnvironments;
@@ -90,9 +96,12 @@ export const createMockActions = (
     console.log('[Mock] Checking exists:', path);
     return true;
   },
-  sendRequest: async (request: BrunoRequest, environment?: Record<string, string>): Promise<BrunoResponse> => {
+  sendRequest: async (
+    request: BrunoRequest,
+    _environment?: Record<string, string>
+  ): Promise<BrunoResponse> => {
     // eslint-disable-next-line no-console
-    console.log('[Mock] Sending request:', request.http?.method, request.http?.url, environment);
+    console.log('[Mock] Sending request:', request.http?.method);
     await new Promise((resolve) => setTimeout(resolve, 500));
     return {
       status: 200,
@@ -192,15 +201,31 @@ export const createMockBrunoContext = (
  * Wraps BrunoPanel with mock context including fileTree and ThemeProvider
  */
 export const MockBrunoPanelProvider: React.FC<{
-  children: (props: PanelComponentProps<BrunoPanelActions, BrunoPanelContext>) => React.ReactNode;
+  children: (
+    props: PanelComponentProps<BrunoPanelActions, BrunoPanelContext>
+  ) => React.ReactNode;
   fileTree?: FileTree;
   brunoRequests?: Record<string, BrunoRequest>;
   contextOverrides?: Partial<PanelContextValue<BrunoPanelContext>>;
   actionsOverrides?: Partial<BrunoPanelActions>;
-}> = ({ children, fileTree, brunoRequests, contextOverrides, actionsOverrides }) => {
-  const context = createMockBrunoContext(fileTree, contextOverrides);
-  const actions = createMockActions(actionsOverrides, brunoRequests);
-  const events = createMockEvents();
+}> = ({
+  children,
+  fileTree,
+  brunoRequests,
+  contextOverrides,
+  actionsOverrides,
+}) => {
+  const context = useMemo(
+    () => createMockBrunoContext(fileTree, contextOverrides),
+    [fileTree, contextOverrides]
+  );
+  const actions = useMemo(
+    () => createMockActions(actionsOverrides, brunoRequests),
+    [actionsOverrides, brunoRequests]
+  );
+  const events = useMemo(() => createMockEvents(), []);
 
-  return <ThemeProvider>{children({ context, actions, events })}</ThemeProvider>;
+  return (
+    <ThemeProvider>{children({ context, actions, events })}</ThemeProvider>
+  );
 };
